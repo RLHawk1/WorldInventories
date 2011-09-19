@@ -1,0 +1,15 @@
+name: worldinventories
+main: me.drayshak.WorldInventories.WorldInventories
+version: 0.0.1
+commands:
+   witoggleplayer:
+      description:  
+      usage: /<command> [on/off] [player]
+permissions:
+   worldinventories.toggleuser:
+      description: Toggles whether a player has per-world-group inventories.
+   worldinventories.*:
+      description: Allow user to do anything with WorldInventories
+      default: admin
+      children:
+        worldinventories.toggleuser: true

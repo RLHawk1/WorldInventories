@@ -1,0 +1,17 @@
+# Eclipse
+/.classpath
+/.project
+/.settings
+
+# netbeans
+#/nbproject (allow public settings)
+/nbproject/private
+.*.sw[a-p]
+
+/build
+/bin
+/dist
+/manifest.mf
+build.xml
+
+/.DS_Store
