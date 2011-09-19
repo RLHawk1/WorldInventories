@@ -1,7 +1,8 @@
 package me.drayshak.WorldInventories;
 
-import java.net.InetAddress;
-import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Server;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
+import org.bukkit.util.config.ConfigurationNode;
 
 public class WorldInventories extends JavaPlugin
 {
@@ -18,7 +20,7 @@ public class WorldInventories extends JavaPlugin
     protected static Configuration config;
     private static PluginManager pluginManager = null;
     public static Server bukkitServer = null;
-
+    private ArrayList<Group> groups = null;
     // NetBeans complains about these log lines but message formatting breaks for me
     public static void logStandard(String line)
     {
@@ -39,11 +41,44 @@ public class WorldInventories extends JavaPlugin
     {
         boolean bConfigChanged = false;
         
+        List<String> worldgroups = WorldInventories.config.getKeys("groups");
+        if(worldgroups == null)
+        {
+            bConfigChanged = true;
+            
+            ArrayList<String> examplegroups = new ArrayList<String>();
+            examplegroups.add("examplegroupone");
+            examplegroups.add("examplegrouptwo");
+            
+            config.setProperty("groups", examplegroups);
+            
+            String exampleworlds = "exampleworldone,exampleworldtwo";
+            
+            config.setProperty("groups.exampleworldone", exampleworlds);
+            
+            String exampleworldstwo = "exampleworldthree";
+            
+            config.setProperty("groups.examplegrouptwo", exampleworldstwo);
+        }
+        
         if(bConfigChanged) config.save();
     }
     
     private boolean loadConfiguration()
     {
+        this.groups = new ArrayList<Group>();
+        
+        List<String> nodes =  WorldInventories.config.getKeys("groups");
+        WorldInventories.logStandard(Integer.toString(nodes.size()));
+        for(String group : nodes)
+        {
+            List<String> worldnames = WorldInventories.config.getStringList("groups." + group, null);
+            if(worldnames != null)
+            {
+                this.groups.add(new Group(group, worldnames));
+            }
+        }
+        
         return true;
     }
     
@@ -106,7 +141,7 @@ public class WorldInventories extends JavaPlugin
                 else if(args[0].equalsIgnoreCase("off"))    bToggle = false;
                 else return false;
                 
-                Player player = WorldInventories.bukkitServer.getPlayer(args[1]);
+                Player player = WorldInventories.bukkitServer.getPlayerExact(args[1]);
                 if(player == null) sender.sendMessage("Player not found!");
                 else
                 {
