@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -125,7 +126,7 @@ public class WIPlayerListener extends PlayerListener
         String fromworld = event.getFrom().getWorld().getName();
         String toworld = event.getTo().getWorld().getName();
         
-        WorldInventories.logStandard("Player teleported from " + fromworld + " to " + toworld);
+        WorldInventories.logStandard("Player " + player.getName() + " teleported from " + fromworld + " to " + toworld);
         
         if(!fromworld.equals(toworld))
         {
@@ -134,6 +135,11 @@ public class WIPlayerListener extends PlayerListener
             
             savePlayerInventory(player, fromgroup, getPlayerInventory(player));
             setPlayerInventory(player, loadPlayerInventory(player, togroup));
+            
+            String groupname = "default";
+            if(togroup != null) groupname = togroup.getName();
+            
+            player.sendMessage(ChatColor.GREEN + "Changed inventory to group: " + groupname);
         }
     }
     
@@ -152,6 +158,11 @@ public class WIPlayerListener extends PlayerListener
         {
             WorldInventories.logStandard("Loading inventory of " + player);
             setPlayerInventory(player, loadPlayerInventory(player, tGroup));
+            
+            String groupname = "default";
+            if(tGroup != null) groupname = tGroup.getName();
+            
+            player.sendMessage(ChatColor.GREEN + "Changed inventory to group: " + groupname);
         }
     }
     
