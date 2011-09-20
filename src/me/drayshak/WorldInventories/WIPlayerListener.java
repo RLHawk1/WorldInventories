@@ -99,7 +99,7 @@ public class WIPlayerListener extends PlayerListener
         }
         catch (FileNotFoundException e)
         {
-            WorldInventories.logError("Player " + player.getName() + " will get a new item file on next save (clearing now): " + group.getName());
+            WorldInventories.logError("Player " + player.getName() + " will get a new item file on next save (clearing now).");
             player.getInventory().clear();
             ItemStack[] armour = new ItemStack[4];
             for(int i = 0; i < 4; i++)
