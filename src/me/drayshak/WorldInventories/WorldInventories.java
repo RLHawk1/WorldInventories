@@ -1,6 +1,7 @@
 package me.drayshak.WorldInventories;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -9,6 +10,8 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
@@ -18,9 +21,11 @@ public class WorldInventories extends JavaPlugin
 {
     public static final Logger log = Logger.getLogger("Minecraft");
     protected static Configuration config;
-    private static PluginManager pluginManager = null;
+    public static PluginManager pluginManager = null;
     public static Server bukkitServer = null;
-    private ArrayList<Group> groups = null;
+    public static ArrayList<Group> groups = null;
+    private final WIPlayerListener playerListener = new WIPlayerListener(this);
+    
     // NetBeans complains about these log lines but message formatting breaks for me
     public static void logStandard(String line)
     {
@@ -52,11 +57,11 @@ public class WorldInventories extends JavaPlugin
             
             config.setProperty("groups", examplegroups);
             
-            String exampleworlds = "exampleworldone,exampleworldtwo";
+            List<String> exampleworlds = Arrays.asList("exampleworldone", "exampleworldtwo");
             
             config.setProperty("groups.exampleworldone", exampleworlds);
             
-            String exampleworldstwo = "exampleworldthree";
+            List<String> exampleworldstwo = Arrays.asList("exampleworldthree");
             
             config.setProperty("groups.examplegrouptwo", exampleworldstwo);
         }
@@ -66,21 +71,36 @@ public class WorldInventories extends JavaPlugin
     
     private boolean loadConfiguration()
     {
-        this.groups = new ArrayList<Group>();
+        WorldInventories.groups = new ArrayList<Group>();
         
         List<String> nodes =  WorldInventories.config.getKeys("groups");
-        WorldInventories.logStandard(Integer.toString(nodes.size()));
         for(String group : nodes)
         {
             List<String> worldnames = WorldInventories.config.getStringList("groups." + group, null);
             if(worldnames != null)
             {
-                this.groups.add(new Group(group, worldnames));
+                WorldInventories.groups.add(new Group(group, worldnames));
             }
         }
         
         return true;
     }
+ 
+    public static Group findFirstGroupForWorld(String world)
+    {
+        for(Group tGroup : WorldInventories.groups)
+        {
+            for(String tWorld : tGroup.getWorlds())
+            {
+                if(tWorld.equals(world))
+                {
+                    return tGroup;
+                }                    
+            }
+        }
+        
+        return null;
+    }    
     
     @Override
     public void onEnable()
@@ -107,11 +127,13 @@ public class WorldInventories extends JavaPlugin
         else
         {
             WorldInventories.logStandard("Loaded configuration successfully");
-            // TODO: Do stuff here
         }
         
         if(bInitialised)
         {
+            WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_TELEPORT, playerListener, Priority.Normal, this);
+            WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
+            WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Normal, this);
             WorldInventories.logStandard("Initialised successfully!");
             
         }
@@ -122,7 +144,19 @@ public class WorldInventories extends JavaPlugin
     @Override
     public void onDisable()
     {
-        // TODO: Save current information!
+        Player[] players = WorldInventories.bukkitServer.getOnlinePlayers();
+        for(Player player : players)
+        {
+            String world = player.getLocation().getWorld().getName();
+        
+            Group tGroup = findFirstGroupForWorld(world);            
+            
+            if(tGroup != null)
+            {    
+                WorldInventories.logStandard("Saving inventory of " + player);
+                WIPlayerListener.savePlayerInventory(player, findFirstGroupForWorld(world), WIPlayerListener.getPlayerInventory(player));
+            }
+        }
         WorldInventories.logStandard("Plugin disabled");
     }
     
