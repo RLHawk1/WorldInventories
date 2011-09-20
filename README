@@ -1,1 +1,8 @@
-Nothing here yet
+WorldInventories
+=======================
+
+Provided with no guarantee whatsoever. I've tested it a lot on my server and the code's here if you want to check it over.
+
+Simply put WorldInventories in the Bukkit plugins folder, run it once, edit the config file it creates. An example is included so it should be self-explanatory.
+
+The first time you teleport in to a new world group it will wipe the items you had! There's not really a better way of doing this.
