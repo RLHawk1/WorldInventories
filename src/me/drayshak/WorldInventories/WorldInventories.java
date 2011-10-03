@@ -1,21 +1,28 @@
 package me.drayshak.WorldInventories;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
-import org.bukkit.util.config.ConfigurationNode;
 
 public class WorldInventories extends JavaPlugin
 {
@@ -25,6 +32,101 @@ public class WorldInventories extends JavaPlugin
     public static Server bukkitServer = null;
     public static ArrayList<Group> groups = null;
     private final WIPlayerListener playerListener = new WIPlayerListener(this);
+    private final WIEntityListener entityListener = new WIEntityListener(this);
+    
+    public WIPlayerInventory getPlayerInventory(Player player)
+    {
+        return new WIPlayerInventory(player.getInventory().getContents(), player.getInventory().getArmorContents());
+    }
+    
+    public void setPlayerInventory(Player player, WIPlayerInventory playerInventory)
+    {
+        if(playerInventory != null)
+        {
+            player.getInventory().setContents(playerInventory.getItems());
+            player.getInventory().setArmorContents(playerInventory.getArmour());
+        }
+    }
+    
+    public void savePlayerInventory(Player player, Group group, WIPlayerInventory toStore)
+    {        
+        FileOutputStream fOS = null;
+        ObjectOutputStream obOut = null;
+        
+        if(!this.getDataFolder().exists()) this.getDataFolder().mkdir();
+        
+        String path = File.separator;
+        
+        // Use default group
+        if(group == null)   path += "default";
+        else                path += group.getName();
+
+        path = this.getDataFolder().getAbsolutePath() + path;
+        
+        File file = new File(path);
+        if(!file.exists()) file.mkdir();
+        
+        path += File.separator + player.getName() + ".inventory";
+        
+        try
+        {
+            fOS = new FileOutputStream(path);
+            obOut = new ObjectOutputStream(fOS);
+            obOut.writeObject(toStore);
+            obOut.close();
+        }
+        catch (Exception e)
+        {
+            WorldInventories.logError("Failed to save inventory for player: " + player.getName() + ": " + e.getMessage());
+        }
+    }
+    
+    public WIPlayerInventory loadPlayerInventory(Player player, Group group)
+    {
+        WIPlayerInventory playerInventory = null;
+        
+        FileInputStream fIS = null;
+        ObjectInputStream obIn = null;
+        
+        String path = File.separator;
+        
+        // Use default group
+        if(group == null)   path += "default";
+        else                path += group.getName();
+
+        path = this.getDataFolder().getAbsolutePath() + path;
+        
+        File file = new File(path);
+        if(!file.exists()) file.mkdir();
+        
+        path += File.separator + player.getName() + ".inventory";
+        
+        try
+        {
+            fIS = new FileInputStream(path);
+            obIn = new ObjectInputStream(fIS);
+            playerInventory = (WIPlayerInventory) obIn.readObject();
+            obIn.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            WorldInventories.logError("Player " + player.getName() + " will get a new item file on next save (clearing now).");
+            player.getInventory().clear();
+            ItemStack[] armour = new ItemStack[4];
+            for(int i = 0; i < 4; i++)
+            {
+                armour[i] = new ItemStack(Material.AIR);
+            }
+            
+            player.getInventory().setArmorContents(armour);
+        }
+        catch (Exception e)
+        {
+            WorldInventories.logError("Failed to load inventory for player: " + player.getName() + ", giving empty inventory: " + e.getMessage());
+        }
+                
+        return playerInventory;
+    }    
     
     // NetBeans complains about these log lines but message formatting breaks for me
     public static void logStandard(String line)
@@ -134,6 +236,8 @@ public class WorldInventories extends JavaPlugin
             WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_TELEPORT, playerListener, Priority.Normal, this);
             WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
             WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Normal, this);
+            WorldInventories.pluginManager.registerEvent(Event.Type.ENTITY_DEATH, entityListener, Priority.Normal, this);
+            
             WorldInventories.logStandard("Initialised successfully!");
             
         }
@@ -154,7 +258,7 @@ public class WorldInventories extends JavaPlugin
             if(tGroup != null)
             {    
                 WorldInventories.logStandard("Saving inventory of " + player);
-                WIPlayerListener.savePlayerInventory(player, findFirstGroupForWorld(world), WIPlayerListener.getPlayerInventory(player));
+                savePlayerInventory(player, findFirstGroupForWorld(world), getPlayerInventory(player));
             }
         }
         WorldInventories.logStandard("Plugin disabled");
