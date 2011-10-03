@@ -21,7 +21,7 @@
     <!-- Continuous integration -->
     <ciManagement>
         <system>jenkins</system>
-        <url>http://ci.getspout.org</url>
+        <url>http://ci.drayshak.co.uk</url>
     </ciManagement>    
     
  <build>
