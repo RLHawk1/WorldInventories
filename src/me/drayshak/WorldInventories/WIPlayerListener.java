@@ -32,12 +32,22 @@ public class WIPlayerListener extends PlayerListener
             Group togroup = WorldInventories.findFirstGroupForWorld(toworld);
             
             plugin.savePlayerInventory(player, fromgroup, plugin.getPlayerInventory(player));
-            plugin.setPlayerInventory(player, plugin.loadPlayerInventory(player, togroup));
+      
+            String fromgroupname = "default";
+            if(fromgroup != null) fromgroupname = fromgroup.getName();             
             
-            String groupname = "default";
-            if(togroup != null) groupname = togroup.getName();
-            
-            player.sendMessage(ChatColor.GREEN + "Changed inventory set to group: " + groupname);
+            String togroupname = "default";
+            if(togroup != null) togroupname = togroup.getName();            
+
+            if(!fromgroupname.equals(togroupname))
+            {
+                plugin.setPlayerInventory(player, plugin.loadPlayerInventory(player, togroup));
+                player.sendMessage(ChatColor.GREEN + "Changed inventory set to group: " + togroupname);
+            }
+            else
+            {
+                player.sendMessage(ChatColor.GREEN + "No inventory change necessary for group: " + togroupname);
+            }
         }
     }
     

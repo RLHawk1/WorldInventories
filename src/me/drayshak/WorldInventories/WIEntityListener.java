@@ -25,7 +25,8 @@ public class WIEntityListener extends EntityListener
             String world = player.getWorld().getName();
             Group togroup = WorldInventories.findFirstGroupForWorld(world);
             
-            WorldInventories.logStandard("Player " + player.getName() + " died in world " + world + ", emptying inventory.");
+            WorldInventories.logStandard("Player " + player.getName() + " died in world " + world + ", emptying inventory for group: " + togroup.toString());
+            
             // Make the saved inventory blank so players can't duplicate by switching worlds and picking items back up
             plugin.savePlayerInventory(player, togroup, new WIPlayerInventory(new ItemStack[36], new ItemStack[4]));
         }
