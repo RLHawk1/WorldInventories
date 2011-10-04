@@ -4,8 +4,7 @@
 /.settings
 
 # netbeans
-#/nbproject (allow public settings)
-/nbproject/private
+/nbproject
 .*.sw[a-p]
 
 /build
