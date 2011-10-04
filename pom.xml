@@ -1,9 +1,10 @@
+
 <project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>me.drayshak</groupId>
-  <artifactId>WorldInventories</artifactId>
-  <name>WorldInventories</name>
-  <version>1</version>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>me.drayshak</groupId>
+    <artifactId>WorldInventories</artifactId>
+    <name>WorldInventories</name>
+    <version>1</version>
   
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,7 +25,7 @@
         <url>http://ci.drayshak.co.uk</url>
     </ciManagement>    
     
- <build>
+    <build>
         <defaultGoal>clean package</defaultGoal>
         <sourceDirectory>${basedir}/src</sourceDirectory>
         <!-- Resources -->
@@ -46,6 +47,17 @@
                 </includes>
             </resource>
         </resources>
+        
+        <dependencies>
+            <dependency>
+                <groupId>org.bukkit</groupId>
+                <artifactId>bukkit-855</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+                <type>jar</type>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+        
         <!-- Plugins -->
         <plugins>
             <!-- Compile plugin -->
