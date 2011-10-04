@@ -53,7 +53,7 @@
                 <filtering>true</filtering>
                 <directory>${basedir}</directory>
                 <includes>
-                    <include>LICENSE</include>
+                    <include>LICENSE.txt</include>
                 </includes>
             </resource>
             <resource>
