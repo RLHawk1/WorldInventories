@@ -15,3 +15,5 @@
 build.xml
 
 /.DS_Store
+
+/lib
