@@ -236,6 +236,7 @@ public class WorldInventories extends JavaPlugin
             WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_TELEPORT, playerListener, Priority.Normal, this);
             WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
             WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Normal, this);
+            WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_PORTAL, playerListener, Priority.Normal, this);
             WorldInventories.pluginManager.registerEvent(Event.Type.ENTITY_DEATH, entityListener, Priority.Normal, this);
             
             WorldInventories.logStandard("Initialised successfully!");
