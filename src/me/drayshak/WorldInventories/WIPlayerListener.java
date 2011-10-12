@@ -6,6 +6,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 
 public class WIPlayerListener extends PlayerListener
 {
@@ -14,6 +15,41 @@ public class WIPlayerListener extends PlayerListener
     public WIPlayerListener(final WorldInventories tplugin)
     {
         plugin = tplugin;
+    }
+    
+    @Override
+    public void onPlayerPortal(PlayerPortalEvent event)
+    {
+        Player player = event.getPlayer();
+        
+        String fromworld = event.getFrom().getWorld().getName();
+        String toworld = event.getTo().getWorld().getName();
+        
+        if(!fromworld.equals(toworld))
+        {
+            WorldInventories.logStandard("Player " + player.getName() + " used a portal from " + fromworld + " to " + toworld);
+            
+            Group fromgroup = WorldInventories.findFirstGroupForWorld(fromworld);
+            Group togroup = WorldInventories.findFirstGroupForWorld(toworld);
+            
+            plugin.savePlayerInventory(player, fromgroup, plugin.getPlayerInventory(player));
+      
+            String fromgroupname = "default";
+            if(fromgroup != null) fromgroupname = fromgroup.getName();             
+            
+            String togroupname = "default";
+            if(togroup != null) togroupname = togroup.getName();            
+
+            if(!fromgroupname.equals(togroupname))
+            {
+                plugin.setPlayerInventory(player, plugin.loadPlayerInventory(player, togroup));
+                player.sendMessage(ChatColor.GREEN + "Changed inventory set to group: " + togroupname);
+            }
+            else
+            {
+                player.sendMessage(ChatColor.GREEN + "No inventory change necessary for group: " + togroupname);
+            }
+        }        
     }
     
     @Override
