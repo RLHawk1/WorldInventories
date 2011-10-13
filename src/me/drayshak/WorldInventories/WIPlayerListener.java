@@ -3,6 +3,7 @@ package me.drayshak.WorldInventories;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -19,73 +20,16 @@ public class WIPlayerListener extends PlayerListener
     }
     
     @Override
-    public void onPlayerPortal(PlayerPortalEvent event)
-    {
-        if(event.isCancelled()) return;
-        
-        Player player = event.getPlayer();
-
-        String fromworld = event.getFrom().getWorld().getName();
-
-        Location toLocation = event.getTo();
-        if(toLocation == null)
-        {
-            player.sendMessage(ChatColor.RED + "Couldn't get your destination world (to was null) - can't change inventory!");
-            return;
-        } // Fix MultiVerse bug
-        
-        String toworld = toLocation.getWorld().getName();
-
-        if(toworld.equals(fromworld))
-        {
-            // Something odd happens with MultiVerse-SignPortals, try to fix
-
-            toworld = player.getLocation().getWorld().getName();
-            if(toworld.equals(fromworld))
-            {
-                player.sendMessage(ChatColor.RED + "Couldn't get your destination world (they matched) - can't change inventory!");
-                return;
-            }
-        }
-
-        if(!fromworld.equals(toworld))
-        {
-            WorldInventories.logStandard("Player " + player.getName() + " used a portal from " + fromworld + " to " + toworld);
-
-            Group fromgroup = WorldInventories.findFirstGroupForWorld(fromworld);
-            Group togroup = WorldInventories.findFirstGroupForWorld(toworld);
-
-            plugin.savePlayerInventory(player, fromgroup, plugin.getPlayerInventory(player));
-
-            String fromgroupname = "default";
-            if(fromgroup != null) fromgroupname = fromgroup.getName();             
-
-            String togroupname = "default";
-            if(togroup != null) togroupname = togroup.getName();            
-
-            if(!fromgroupname.equals(togroupname))
-            {
-                plugin.setPlayerInventory(player, plugin.loadPlayerInventory(player, togroup));
-                player.sendMessage(ChatColor.GREEN + "Changed inventory set to group: " + togroupname);
-            }
-            else
-            {
-                player.sendMessage(ChatColor.GREEN + "No inventory change necessary for group: " + togroupname);
-            }
-        }
-    }
-    
-    @Override
-    public void onPlayerTeleport(PlayerTeleportEvent event)
+    public void onPlayerChangedWorld(PlayerChangedWorldEvent event)
     {
         Player player = event.getPlayer();
         
-        String fromworld = event.getFrom().getWorld().getName();
-        String toworld = event.getTo().getWorld().getName();
+        String fromworld = event.getFrom().getName();
+        String toworld = player.getLocation().getWorld().getName();
         
         if(!fromworld.equals(toworld))
         {
-            WorldInventories.logStandard("Player " + player.getName() + " teleported from " + fromworld + " to " + toworld);
+            WorldInventories.logStandard("Player " + player.getName() + " moved from world " + fromworld + " to " + toworld);
             
             Group fromgroup = WorldInventories.findFirstGroupForWorld(fromworld);
             Group togroup = WorldInventories.findFirstGroupForWorld(toworld);
