@@ -30,7 +30,7 @@ public class WIPlayerListener extends PlayerListener
         Location toLocation = event.getTo();
         if(toLocation == null)
         {
-            player.sendMessage(ChatColor.RED + "Couldn't get your destination world - can't change inventory!");
+            
             return;
         } // Fix MultiVerse bug
         
@@ -41,6 +41,11 @@ public class WIPlayerListener extends PlayerListener
             // Something odd happens with MultiVerse-SignPortals, try to fix
 
             toworld = player.getLocation().getWorld().getName();
+            if(toworld.equals(fromworld))
+            {
+                player.sendMessage(ChatColor.RED + "Couldn't get your destination world (they matched) - can't change inventory!");
+                return;
+            }
         }
 
         if(!fromworld.equals(toworld))
