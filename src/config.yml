@@ -2,4 +2,5 @@ groups:
     examplegroupone:
     - exampleworldtwo
     examplegrouptwo:
-    - exampleworldtwo, exampleworldthree
+    - exampleworldtwo
+    - exampleworldthree

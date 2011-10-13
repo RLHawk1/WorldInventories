@@ -1,14 +1,11 @@
 package me.drayshak.WorldInventories;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
 
 public class WIPlayerListener extends PlayerListener
 {
@@ -54,7 +51,7 @@ public class WIPlayerListener extends PlayerListener
         }
     }
     
-    @Override
+/*    @Override
     public void onPlayerJoin(PlayerJoinEvent event)
     {
         Player player = event.getPlayer();
@@ -75,7 +72,7 @@ public class WIPlayerListener extends PlayerListener
             
             player.sendMessage(ChatColor.GREEN + "Changed inventory to group: " + groupname);
         }
-    }
+    }*/
     
     @Override
     public void onPlayerQuit(PlayerQuitEvent event)

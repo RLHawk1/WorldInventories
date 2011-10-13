@@ -9,7 +9,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Material;
@@ -234,7 +233,7 @@ public class WorldInventories extends JavaPlugin
         
         if(bInitialised)
         {
-            WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
+            //WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
             WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Normal, this);
             WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Priority.Normal, this);
             WorldInventories.pluginManager.registerEvent(Event.Type.WORLD_SAVE, worldListener, Priority.Normal, this);
