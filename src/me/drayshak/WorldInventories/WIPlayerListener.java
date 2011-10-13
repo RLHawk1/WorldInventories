@@ -30,7 +30,7 @@ public class WIPlayerListener extends PlayerListener
         Location toLocation = event.getTo();
         if(toLocation == null)
         {
-            
+            player.sendMessage(ChatColor.RED + "Couldn't get your destination world (to was null) - can't change inventory!");
             return;
         } // Fix MultiVerse bug
         
