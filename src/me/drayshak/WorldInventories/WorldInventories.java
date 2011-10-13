@@ -33,6 +33,7 @@ public class WorldInventories extends JavaPlugin
     public static ArrayList<Group> groups = null;
     private final WIPlayerListener playerListener = new WIPlayerListener(this);
     private final WIEntityListener entityListener = new WIEntityListener(this);
+    private final WIWorldListener worldListener = new WIWorldListener(this);
     
     public WIPlayerInventory getPlayerInventory(Player player)
     {
@@ -237,6 +238,7 @@ public class WorldInventories extends JavaPlugin
             WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
             WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Normal, this);
             WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_PORTAL, playerListener, Priority.Normal, this);
+            WorldInventories.pluginManager.registerEvent(Event.Type.WORLD_SAVE, worldListener, Priority.Normal, this);
             WorldInventories.pluginManager.registerEvent(Event.Type.ENTITY_DEATH, entityListener, Priority.Normal, this);
             
             WorldInventories.logStandard("Initialised successfully!");
