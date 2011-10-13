@@ -1,0 +1,5 @@
+groups:
+    examplegroupone:
+    - exampleworldtwo
+    examplegrouptwo:
+    - exampleworldtwo, exampleworldthree

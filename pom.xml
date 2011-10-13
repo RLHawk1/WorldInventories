@@ -29,7 +29,7 @@
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/artifactory/repo</url>
-        </repository>
+        </repository>      
     </repositories> 
     
     <dependencies>
@@ -39,7 +39,7 @@
             <version>0.0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
-        </dependency>
+        </dependency>  
     </dependencies>    
     
     <build>
