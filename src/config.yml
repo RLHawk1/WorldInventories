@@ -4,3 +4,4 @@ groups:
     examplegrouptwo:
     - exampleworldtwo
     - exampleworldthree
+donotifications: true
