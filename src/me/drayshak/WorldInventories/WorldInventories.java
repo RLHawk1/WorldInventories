@@ -33,6 +33,7 @@ public class WorldInventories extends JavaPlugin
     private final WIPlayerListener playerListener = new WIPlayerListener(this);
     private final WIEntityListener entityListener = new WIEntityListener(this);
     private final WIWorldListener worldListener = new WIWorldListener(this);
+    public static boolean doNotifications = true;
     
     public WIPlayerInventory getPlayerInventory(Player player)
     {
@@ -167,6 +168,14 @@ public class WorldInventories extends JavaPlugin
             
             config.setProperty("groups.examplegrouptwo", exampleworldstwo);
         }
+        
+        Boolean btDoNotifications = WorldInventories.config.getBoolean("donotifications", true);
+        if(btDoNotifications = null)
+        {
+            bConfigChanged = true;
+            config.setProperty("donotifications", true);
+        }
+        else doNotifications = btDoNotifications;
         
         if(bConfigChanged) config.save();
     }

@@ -42,37 +42,20 @@ public class WIPlayerListener extends PlayerListener
             if(!fromgroupname.equals(togroupname))
             {
                 plugin.setPlayerInventory(player, plugin.loadPlayerInventory(player, togroup));
-                player.sendMessage(ChatColor.GREEN + "Changed inventory set to group: " + togroupname);
+                if(WorldInventories.doNotifications)
+                {
+                    player.sendMessage(ChatColor.GREEN + "Changed inventory set to group: " + togroupname);
+                }
             }
             else
             {
-                player.sendMessage(ChatColor.GREEN + "No inventory change necessary for group: " + togroupname);
+                if(WorldInventories.doNotifications)
+                {
+                    player.sendMessage(ChatColor.GREEN + "No inventory change necessary for group: " + togroupname);
+                }
             }
         }
     }
-    
-/*    @Override
-    public void onPlayerJoin(PlayerJoinEvent event)
-    {
-        Player player = event.getPlayer();
-        String world = player.getLocation().getWorld().getName();
-        
-        WorldInventories.logStandard("Player joined world: " + world);
-        
-        Group tGroup = WorldInventories.findFirstGroupForWorld(world);
-        
-        // Don't load if we don't care where we are (default group)
-        if(tGroup != null)
-        {
-            WorldInventories.logStandard("Loading inventory of " + player.getName());
-            plugin.setPlayerInventory(player, plugin.loadPlayerInventory(player, tGroup));
-            
-            String groupname = "default";
-            if(tGroup != null) groupname = tGroup.getName();
-            
-            player.sendMessage(ChatColor.GREEN + "Changed inventory to group: " + groupname);
-        }
-    }*/
     
     @Override
     public void onPlayerQuit(PlayerQuitEvent event)
