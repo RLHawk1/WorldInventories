@@ -27,7 +27,7 @@ public class WIWorldListener extends WorldListener
             // Don't save if we don't care where we are (default group)
             if(tGroup != null)
             {    
-                plugin.savePlayerInventory(player, WorldInventories.findFirstGroupForWorld(world), plugin.getPlayerInventory(player));
+                plugin.savePlayerInventory(player.getName(), WorldInventories.findFirstGroupForWorld(world), plugin.getPlayerInventory(player));
             }
         }
         

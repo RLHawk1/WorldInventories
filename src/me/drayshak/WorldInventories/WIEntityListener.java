@@ -31,7 +31,7 @@ public class WIEntityListener extends EntityListener
             WorldInventories.logStandard("Player " + player.getName() + " died in world " + world + ", emptying inventory for group: " + togroupname);
             
             // Make the saved inventory blank so players can't duplicate by switching worlds and picking items back up
-            plugin.savePlayerInventory(player, togroup, new WIPlayerInventory(new ItemStack[36], new ItemStack[4]));
+            plugin.savePlayerInventory(player.getName(), togroup, new WIPlayerInventory(new ItemStack[36], new ItemStack[4]));
         }
     }
 }

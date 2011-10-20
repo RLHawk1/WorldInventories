@@ -1,11 +1,16 @@
 package me.drayshak.WorldInventories;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +39,7 @@ public class WorldInventories extends JavaPlugin
     private final WIEntityListener entityListener = new WIEntityListener(this);
     private final WIWorldListener worldListener = new WIWorldListener(this);
     public static boolean doNotifications = true;
+    public static boolean doMultiInvImport = false;
     
     public WIPlayerInventory getPlayerInventory(Player player)
     {
@@ -49,7 +55,7 @@ public class WorldInventories extends JavaPlugin
         }
     }
     
-    public void savePlayerInventory(Player player, Group group, WIPlayerInventory toStore)
+    public void savePlayerInventory(String player, Group group, WIPlayerInventory toStore)
     {        
         FileOutputStream fOS = null;
         ObjectOutputStream obOut = null;
@@ -67,7 +73,7 @@ public class WorldInventories extends JavaPlugin
         File file = new File(path);
         if(!file.exists()) file.mkdir();
         
-        path += File.separator + player.getName() + ".inventory";
+        path += File.separator + player + ".inventory";
         
         try
         {
@@ -78,7 +84,7 @@ public class WorldInventories extends JavaPlugin
         }
         catch (Exception e)
         {
-            WorldInventories.logError("Failed to save inventory for player: " + player.getName() + ": " + e.getMessage());
+            WorldInventories.logError("Failed to save inventory for player: " + player + ": " + e.getMessage());
         }
     }
     
@@ -108,6 +114,7 @@ public class WorldInventories extends JavaPlugin
             obIn = new ObjectInputStream(fIS);
             playerInventory = (WIPlayerInventory) obIn.readObject();
             obIn.close();
+            fIS.close();
         }
         catch (FileNotFoundException e)
         {
@@ -128,6 +135,101 @@ public class WorldInventories extends JavaPlugin
                 
         return playerInventory;
     }    
+    
+    public boolean importMultiInvData()
+    {
+        File MISharesLocation = new File(WorldInventories.pluginManager.getPlugin("MultiInv").getDataFolder(), "Worlds" + File.separator);
+        if(!MISharesLocation.exists())
+        {
+            WorldInventories.logError("Failed to import MultiInv shares - " + MISharesLocation.toString() + " doesn't seem to exist.");
+            return false;
+        }
+        
+        File fMIConfig = new File(WorldInventories.pluginManager.getPlugin("MultiInv").getDataFolder(), "shares.yml");
+        if(!fMIConfig.exists())
+        {
+            WorldInventories.logError("Failed to import MultiInv shares - shares file doesn't seem to exist.");
+            return false;
+        }
+        
+        Configuration MIConfig = new Configuration(fMIConfig);
+        MIConfig.load();
+        
+        for (String sGroup : MIConfig.getKeys())
+        {
+            List<String> sWorlds = MIConfig.getStringList(sGroup, null);
+            if(sWorlds != null)
+            {
+                Group group = new Group(sGroup, sWorlds);
+                WorldInventories.groups.add(group); 
+                config.setProperty("groups." + sGroup, sWorlds);
+            }
+            else
+            {
+                WorldInventories.logError("Skipping import of group because it is empty: " + sGroup);
+            }
+        }                           
+        
+        config.save();
+        
+        ArrayList<String> sMIShares = new ArrayList(Arrays.asList(MISharesLocation.list()));
+        
+        if(sMIShares.size() <= 0)
+        {
+            WorldInventories.logError("Failed to import MultiInv shares - there weren't any shares found!");
+            return false;
+        }
+        else
+        {
+            for(int i = 0; i < sMIShares.size(); i++)
+            {
+                String sWorld = sMIShares.get(i);
+                
+                File fWorld = new File(MISharesLocation, sWorld);
+                if(fWorld.isDirectory() && fWorld.exists())
+                {
+                    Group group = findFirstGroupForWorld(sWorld);
+                    if(group == null)
+                    {
+                        group = new Group(sWorld, Arrays.asList(sWorld));
+                        WorldInventories.groups.add(group); 
+                        config.setProperty("groups." + sWorld, Arrays.asList(sWorld));
+                        config.save();
+
+                        WorldInventories.logError("A world was found that doesn't belong to any groups! It was saved as its own group. To put it in a group, edit the WorldInventories config.yml: " + sWorld);
+                    }                       
+                    
+                    //List<String> sPlayer = Arrays.asList(fWorld.list());
+                    
+                    for(File shareFile : fWorld.listFiles())
+                    {
+                        if(shareFile.getAbsolutePath().endsWith(".yml"))
+                        {
+                            String sFilename = shareFile.getName();
+                            String playerName = sFilename.substring(0, sFilename.length() - 4);
+                                
+                            Configuration playerConfig = new Configuration(shareFile);
+                            playerConfig.load();
+                            
+                            String sPlayerInventory = playerConfig.getString("survival");
+                            WIPlayerInventory playerInventory = MultiInvImportHelper.playerInventoryFromMIString(sPlayerInventory);
+                            if(playerInventory == null) sPlayerInventory = playerConfig.getString("creative");
+                            if(playerInventory == null)
+                            {
+                                logError("Failed to load MultiInv data - found player file but failed to convert it: " + playerName);
+                            }
+                            else
+                            {
+                                this.savePlayerInventory(playerName, group, playerInventory);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return true;
+    }
     
     // NetBeans complains about these log lines but message formatting breaks for me
     public static void logStandard(String line)
@@ -170,12 +272,20 @@ public class WorldInventories extends JavaPlugin
         }
         
         Boolean btDoNotifications = WorldInventories.config.getBoolean("donotifications", true);
-        if(btDoNotifications = null)
+        if(btDoNotifications == null)
         {
             bConfigChanged = true;
             config.setProperty("donotifications", true);
         }
         else doNotifications = btDoNotifications;
+     
+        Boolean btDoMVImport = WorldInventories.config.getBoolean("domiimport", false);
+        if(btDoMVImport == null)
+        {
+            bConfigChanged = true;
+            config.setProperty("domiimport", false);
+        }
+        else doMultiInvImport = btDoMVImport;        
         
         if(bConfigChanged) config.save();
     }
@@ -228,6 +338,7 @@ public class WorldInventories extends JavaPlugin
         
         WorldInventories.logStandard("Loading configuration...");
         this.createDefConfigIfNecessary();
+        
         boolean bConfiguration = this.loadConfiguration();
         
         if(!bConfiguration)
@@ -238,10 +349,25 @@ public class WorldInventories extends JavaPlugin
         else
         {
             WorldInventories.logStandard("Loaded configuration successfully");
-        }
+        }   
         
         if(bInitialised)
         {
+            if(doMultiInvImport)
+            {
+                boolean bSuccess = this.importMultiInvData();
+
+                
+
+                config.setProperty("domiimport", false);
+                config.save();
+                
+                if(bSuccess)
+                {
+                    WorldInventories.logStandard("MultiInv data import was a success!");
+                }
+            }           
+            
             //WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
             WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_QUIT, playerListener, Priority.Normal, this);
             WorldInventories.pluginManager.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Priority.Normal, this);
@@ -268,7 +394,7 @@ public class WorldInventories extends JavaPlugin
             if(tGroup != null)
             {    
                 WorldInventories.logStandard("Saving inventory of " + player);
-                savePlayerInventory(player, findFirstGroupForWorld(world), getPlayerInventory(player));
+                savePlayerInventory(player.getName(), findFirstGroupForWorld(world), getPlayerInventory(player));
             }
         }
         WorldInventories.logStandard("Plugin disabled");

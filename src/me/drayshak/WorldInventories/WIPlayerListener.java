@@ -31,7 +31,7 @@ public class WIPlayerListener extends PlayerListener
             Group fromgroup = WorldInventories.findFirstGroupForWorld(fromworld);
             Group togroup = WorldInventories.findFirstGroupForWorld(toworld);
             
-            plugin.savePlayerInventory(player, fromgroup, plugin.getPlayerInventory(player));
+            plugin.savePlayerInventory(player.getName(), fromgroup, plugin.getPlayerInventory(player));
       
             String fromgroupname = "default";
             if(fromgroup != null) fromgroupname = fromgroup.getName();             
@@ -71,7 +71,7 @@ public class WIPlayerListener extends PlayerListener
         if(tGroup != null)
         {    
             WorldInventories.logStandard("Saving inventory of " + player.getName());
-            plugin.savePlayerInventory(player, WorldInventories.findFirstGroupForWorld(world), plugin.getPlayerInventory(player));
+            plugin.savePlayerInventory(player.getName(), WorldInventories.findFirstGroupForWorld(world), plugin.getPlayerInventory(player));
         }
     }
 }
