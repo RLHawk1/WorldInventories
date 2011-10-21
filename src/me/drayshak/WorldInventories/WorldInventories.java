@@ -24,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
@@ -138,7 +139,13 @@ public class WorldInventories extends JavaPlugin
     
     public boolean importMultiInvData()
     {
-        File MISharesLocation = new File(WorldInventories.pluginManager.getPlugin("MultiInv").getDataFolder(), "Worlds" + File.separator);
+        Plugin pMultiInv = WorldInventories.pluginManager.getPlugin("MultiInv");
+        if(pMultiInv == null)
+        {
+            WorldInventories.logError("Failed to import MultiInv shares - Bukkit couldn't find MultiInv. Make sure it is installed and enabled whilst doing the import, then when successful remove it.");
+        }
+        
+        File MISharesLocation = new File(pMultiInv.getDataFolder(), "Worlds" + File.separator);
         if(!MISharesLocation.exists())
         {
             WorldInventories.logError("Failed to import MultiInv shares - " + MISharesLocation.toString() + " doesn't seem to exist.");
