@@ -17,3 +17,7 @@ build.xml
 /.DS_Store
 
 /lib
+/WorldInventories.iml
+/WorldInventories.ipr
+/beanreg.dll
+/WorldInventories.iws

@@ -1,12 +1,12 @@
 package me.drayshak.WorldInventories;
 
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
 import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 
 public class WIItemStack implements Serializable
 {
+    private static final long serialVersionUID = -6239771143618730223L;
     private int type = 0;
     private int amount = 0;
     private WIMaterialData data = null;

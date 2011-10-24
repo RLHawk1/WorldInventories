@@ -5,6 +5,7 @@ import org.bukkit.Material;
 
 public class WIMaterialData implements Serializable
 {
+    private static final long serialVersionUID = 1385103110780786554L;
     private final int type;
     private byte data = 0;
 
