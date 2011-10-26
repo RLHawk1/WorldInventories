@@ -41,6 +41,7 @@ public class WorldInventories extends JavaPlugin
     private final WIWorldListener worldListener = new WIWorldListener(this);
     public static boolean doNotifications = true;
     public static boolean doMultiInvImport = false;
+    public static boolean doStats = false;
     
     public WIPlayerInventory getPlayerInventory(Player player)
     {
@@ -54,6 +55,15 @@ public class WorldInventories extends JavaPlugin
             player.getInventory().setContents(playerInventory.getItems());
             player.getInventory().setArmorContents(playerInventory.getArmour());
         }
+    }
+    
+    public void setPlayerStats(Player player, WIPlayerStats playerstats)
+    {
+        // Never kill a player - must be a bug if it was 0
+        player.setHealth(Math.max(playerstats.getHealth(), 1));
+        player.setFoodLevel(playerstats.getFoodLevel());
+        player.setExhaustion(playerstats.getExhaustion());
+        player.setSaturation(playerstats.getSaturation());
     }
     
     public void savePlayerInventory(String player, Group group, WIPlayerInventory toStore)
@@ -136,6 +146,83 @@ public class WorldInventories extends JavaPlugin
                 
         return playerInventory;
     }    
+    
+    public WIPlayerStats loadPlayerStats(Player player, Group group)
+    {
+        WIPlayerStats playerstats = null;
+        
+        FileInputStream fIS = null;
+        ObjectInputStream obIn = null;
+        
+        String path = File.separator;
+        
+        // Use default group
+        if(group == null)   path += "default";
+        else                path += group.getName();
+
+        path = this.getDataFolder().getAbsolutePath() + path;
+        
+        File file = new File(path);
+        if(!file.exists()) file.mkdir();
+        
+        path += File.separator + player.getName() + ".stats";
+        
+        try
+        {
+            fIS = new FileInputStream(path);
+            obIn = new ObjectInputStream(fIS);
+            playerstats = (WIPlayerStats) obIn.readObject();
+            obIn.close();
+            fIS.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            WorldInventories.logError("Player " + player.getName() + " will get a new stats file on next save (clearing now).");
+            playerstats = new WIPlayerStats(20, 20, 0, 0);
+            this.setPlayerStats(player, playerstats);
+        }
+        catch (Exception e)
+        {
+            WorldInventories.logError("Failed to load stats for player: " + player.getName() + ", giving defaults: " + e.getMessage());
+        }
+                
+        return playerstats;
+    }    
+    
+    public void savePlayerStats(Player player, Group group)
+    {
+        WIPlayerStats playerstats = new WIPlayerStats(player.getHealth(), player.getFoodLevel(), player.getExhaustion(), player.getSaturation());
+ 
+        FileOutputStream fOS = null;
+        ObjectOutputStream obOut = null;
+        
+        if(!this.getDataFolder().exists()) this.getDataFolder().mkdir();
+        
+        String path = File.separator;
+        
+        // Use default group
+        if(group == null)   path += "default";
+        else                path += group.getName();
+
+        path = this.getDataFolder().getAbsolutePath() + path;
+        
+        File file = new File(path);
+        if(!file.exists()) file.mkdir();
+        
+        path += File.separator + player.getName() + ".stats";
+        
+        try
+        {
+            fOS = new FileOutputStream(path);
+            obOut = new ObjectOutputStream(fOS);
+            obOut.writeObject(playerstats);
+            obOut.close();
+        }
+        catch (Exception e)
+        {
+            WorldInventories.logError("Failed to save stats for player: " + player + ": " + e.getMessage());
+        }        
+    }
     
     public boolean importMultiInvData()
     {
@@ -292,7 +379,15 @@ public class WorldInventories extends JavaPlugin
             bConfigChanged = true;
             config.setProperty("domiimport", false);
         }
-        else doMultiInvImport = btDoMVImport;        
+        else doMultiInvImport = btDoMVImport;    
+        
+        Boolean btDoStats = WorldInventories.config.getBoolean("dostats", false);
+        if(btDoStats == null)
+        {
+            bConfigChanged = true;
+            config.setProperty("dostats", false);
+        }
+        else doStats = btDoStats;         
         
         if(bConfigChanged) config.save();
     }

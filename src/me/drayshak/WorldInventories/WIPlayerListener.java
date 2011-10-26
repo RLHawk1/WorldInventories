@@ -32,6 +32,7 @@ public class WIPlayerListener extends PlayerListener
             Group togroup = WorldInventories.findFirstGroupForWorld(toworld);
             
             plugin.savePlayerInventory(player.getName(), fromgroup, plugin.getPlayerInventory(player));
+            if(WorldInventories.doStats) plugin.savePlayerStats(player, fromgroup);
       
             String fromgroupname = "default";
             if(fromgroup != null) fromgroupname = fromgroup.getName();             
@@ -42,16 +43,20 @@ public class WIPlayerListener extends PlayerListener
             if(!fromgroupname.equals(togroupname))
             {
                 plugin.setPlayerInventory(player, plugin.loadPlayerInventory(player, togroup));
+                if(WorldInventories.doStats) plugin.setPlayerStats(player, plugin.loadPlayerStats(player, togroup));
+                
                 if(WorldInventories.doNotifications)
                 {
-                    player.sendMessage(ChatColor.GREEN + "Changed inventory set to group: " + togroupname);
+                    if(WorldInventories.doStats) player.sendMessage(ChatColor.GREEN + "Changed player set to group: " + togroupname);
+                    else                         player.sendMessage(ChatColor.GREEN + "Changed inventory set to group: " + togroupname);
                 }
             }
             else
             {
                 if(WorldInventories.doNotifications)
                 {
-                    player.sendMessage(ChatColor.GREEN + "No inventory change necessary for group: " + togroupname);
+                    if(WorldInventories.doStats)    player.sendMessage(ChatColor.GREEN + "No player set change necessary for group: " + togroupname);
+                    else                            player.sendMessage(ChatColor.GREEN + "No inventory change necessary for group: " + togroupname);
                 }
             }
         }

@@ -32,6 +32,12 @@ public class WIEntityListener extends EntityListener
             
             // Make the saved inventory blank so players can't duplicate by switching worlds and picking items back up
             plugin.savePlayerInventory(player.getName(), togroup, new WIPlayerInventory(new ItemStack[36], new ItemStack[4]));
+            if(WorldInventories.doStats)
+            {
+                WIPlayerStats playerstats = new WIPlayerStats(20, 20, 0, 0);
+                plugin.setPlayerStats(player, playerstats);
+                plugin.savePlayerStats(player, togroup);
+            }
         }
     }
 }
