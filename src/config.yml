@@ -6,3 +6,4 @@ groups:
     - exampleworldthree
 donotifications: true
 domiimport: false
+dostats: false

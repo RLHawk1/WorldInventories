@@ -1,3 +1,13 @@
 name: WorldInventories
 main: me.drayshak.WorldInventories.WorldInventories
-version: 0.0.11
+version: 0.0.12
+commands:
+  wireload:
+    description: Reload WorldInventories configuration
+    permission: worldinventories.reload
+    usage: No arguments, simply do /wireload. Default permissions are given to ops.
+permissions:
+  worldinventories.*:
+    children:
+      worldinventories.reload: true
+    default: op

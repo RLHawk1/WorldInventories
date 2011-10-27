@@ -1,5 +1,6 @@
 package me.drayshak.WorldInventories;
 
+import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -540,21 +542,30 @@ public class WorldInventories extends JavaPlugin
     {
         String command = cmd.getName();
         
-        if(command.equalsIgnoreCase("witoggleplayer"))
+        if(command.equalsIgnoreCase("wireload"))
         {
-            if(args.length == 2)
+            if(args.length == 0)
             {
-                boolean bToggle = false;
-                
-                if(args[0].equalsIgnoreCase("on"))          bToggle = true;
-                else if(args[0].equalsIgnoreCase("off"))    bToggle = false;
-                else return false;
-                
-                Player player = WorldInventories.bukkitServer.getPlayerExact(args[1]);
-                if(player == null) sender.sendMessage("Player not found!");
-                else
+                if(sender.hasPermission("worldinventories.reload"))
                 {
-                    //TODO: Toggle inventory management for this player
+                    config = this.getConfiguration();
+                    config.load();
+
+                    WorldInventories.logStandard("Reloading configuration...");
+                    this.createDefConfigIfNecessary();
+
+                    boolean bConfiguration = this.loadConfiguration();
+
+                    if(!bConfiguration)
+                    {
+                        WorldInventories.logError("Failed to reload configuration.");
+                        sender.sendMessage(ChatColor.RED + "Failed to reload WorldInventories configuration.");
+                    }
+                    else
+                    {
+                        WorldInventories.logStandard("Reoaded configuration successfully");
+                        sender.sendMessage(ChatColor.GREEN + "Reloaded WorldInventories configuration successfully");
+                    }                       
                 }
             }
             
