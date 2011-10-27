@@ -34,8 +34,7 @@ public class WIEntityListener extends EntityListener
             plugin.savePlayerInventory(player.getName(), togroup, new WIPlayerInventory(new ItemStack[36], new ItemStack[4]));
             if(WorldInventories.doStats)
             {
-                WIPlayerStats playerstats = new WIPlayerStats(20, 20, 0, 0);
-                plugin.savePlayerStats(player, togroup);
+                plugin.savePlayerStats(player, togroup, new WIPlayerStats(20, 20, 0, 0));
             }
         }
     }

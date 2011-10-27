@@ -189,6 +189,39 @@ public class WorldInventories extends JavaPlugin
         return playerstats;
     }    
     
+    public void savePlayerStats(Player player, Group group, WIPlayerStats playerstats)
+    {
+        FileOutputStream fOS = null;
+        ObjectOutputStream obOut = null;
+        
+        if(!this.getDataFolder().exists()) this.getDataFolder().mkdir();
+        
+        String path = File.separator;
+        
+        // Use default group
+        if(group == null)   path += "default";
+        else                path += group.getName();
+
+        path = this.getDataFolder().getAbsolutePath() + path;
+        
+        File file = new File(path);
+        if(!file.exists()) file.mkdir();
+        
+        path += File.separator + player.getName() + ".stats";
+        
+        try
+        {
+            fOS = new FileOutputStream(path);
+            obOut = new ObjectOutputStream(fOS);
+            obOut.writeObject(playerstats);
+            obOut.close();
+        }
+        catch (Exception e)
+        {
+            WorldInventories.logError("Failed to save stats for player: " + player + ": " + e.getMessage());
+        }          
+    }
+    
     public void savePlayerStats(Player player, Group group)
     {
         WIPlayerStats playerstats = new WIPlayerStats(player.getHealth(), player.getFoodLevel(), player.getExhaustion(), player.getSaturation());
