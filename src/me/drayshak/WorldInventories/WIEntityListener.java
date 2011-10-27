@@ -35,7 +35,6 @@ public class WIEntityListener extends EntityListener
             if(WorldInventories.doStats)
             {
                 WIPlayerStats playerstats = new WIPlayerStats(20, 20, 0, 0);
-                plugin.setPlayerStats(player, playerstats);
                 plugin.savePlayerStats(player, togroup);
             }
         }
