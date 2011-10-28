@@ -3,6 +3,7 @@
     <groupId>me.drayshak</groupId>
     <artifactId>WorldInventories</artifactId>
     <name>WorldInventories</name>
+    <url>http://dev.bukkit.org/server-mods/world-inventories</url>
     <version>dev-SNAPSHOT</version>
   
     <properties>
@@ -35,7 +36,7 @@
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
+            <artifactId>craftbukkit</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
