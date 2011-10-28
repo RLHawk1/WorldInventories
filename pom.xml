@@ -3,7 +3,7 @@
     <groupId>me.drayshak</groupId>
     <artifactId>WorldInventories</artifactId>
     <name>WorldInventories</name>
-    <version>SNAPSHOT</version>
+    <version>dev-SNAPSHOT</version>
   
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
