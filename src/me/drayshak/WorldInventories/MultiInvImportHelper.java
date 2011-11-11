@@ -18,6 +18,8 @@ public class MultiInvImportHelper
     
     public static WIPlayerInventory playerInventoryFromMIString(String string)
     {
+        if(string == null) return null;
+        
         String[] sSplit = string.split(";-;");
         
         WIItemStack[] playerItems = null;

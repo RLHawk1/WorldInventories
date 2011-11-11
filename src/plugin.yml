@@ -1,6 +1,6 @@
 name: WorldInventories
 main: me.drayshak.WorldInventories.WorldInventories
-version: 0.0.12
+version: 0.0.13
 commands:
   wireload:
     description: Reload WorldInventories configuration
