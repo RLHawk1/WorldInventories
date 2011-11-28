@@ -1,17 +1,11 @@
 package me.drayshak.WorldInventories;
 
-import java.awt.Color;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +25,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
+@SuppressWarnings("deprecation")
 public class WorldInventories extends JavaPlugin
 {
     public static final Logger log = Logger.getLogger("Minecraft");
@@ -301,7 +296,7 @@ public class WorldInventories extends JavaPlugin
         
         config.save();
         
-        ArrayList<String> sMIShares = new ArrayList(Arrays.asList(MISharesLocation.list()));
+        ArrayList<String> sMIShares = new ArrayList<String>(Arrays.asList(MISharesLocation.list()));
         
         if(sMIShares.size() <= 0)
         {
